@@ -5,18 +5,31 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
 
+/**
+       *@author Rizvi Ahmed
+        * @version 0.0.1
+        * @since 2018-10-06
+*/
+
 public class Database {
-    public Statement statement;
-    public String sql_query;
-    public boolean error;
-    public boolean connected;
-    public ResultSet rs;
-    public String username;
-    public String password;
-    private Connection connection;
-    private String db_url;
+    public Statement statement; //Statement type object to create sql statement
+    public String sql_query; //String of create sql statement
+    public boolean error; //bool to get error status has getter method
+    public boolean connected  ; // Connection type object to get connection using driver.
+    public ResultSet rs;  // resultset type object to retrive database record
+    public String username; // username to access to database
+    public String password; // password for database
+    private Connection connection; //connection type object to connect to object
+    private String db_url; // database destination url
     private int rt;
-    private float avgCon = .2f;
+    private float avgCon = .2f; // average consumption per person use to calculate wastage
+
+
+    /**
+     * Constructor for Database class objects. Creates connection with database.
+     * @param _username String Username for the database account
+     * @param _password String Password that is allocated to the user
+     */
 
     public Database(String _username, String _password) {
         connection = null;
@@ -41,6 +54,10 @@ public class Database {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * Closes connection with database. Should always be called at the end of each session to close the database.
+     */
     public void close(){
         try{
             if(connection != null && !connection.isClosed()){
@@ -55,16 +72,33 @@ public class Database {
         }
     }
 
+    /**
+     *
+     * @return boolean coneection status
+     */
     public boolean getConnectionStatus()
     {
         return connected;
     }
+
+    /**
+     *
+     * @return boolean error status
+     */
     public boolean geterrorstatus()
     {
         return error;
     }
 
-
+    /**
+     *
+     * @param _rice amount of rice
+     * @param r_price price of rice
+     * @param _beef amount of beef
+     * @param b_price price of beed
+     * @param _chicken amount of chicken
+     * @param c_price price of chicken
+     */
     public void AddtoInventory(int _rice, int r_price, int _beef, int b_price, int _chicken, int c_price) {
         //TODO cnt variable
         int cnt = 0;
@@ -97,6 +131,11 @@ public class Database {
     }
 
 
+    /**
+     * Method for item removal from inventory according to menu can be used for extension not implemented
+     */
+
+
     public void removeFromInventory() {
         int total;
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
@@ -124,7 +163,12 @@ public class Database {
 
     }
 
-
+    /**
+     *
+     * @param _rice amount of rice to be removed
+     * @param _beef amount of beef to be removed
+     * @param _chicken amount of chicken to be removed
+     */
     public void removeFromInventory(int _rice, int _beef, int _chicken) {
         int total = _rice + _beef + _chicken;
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
@@ -147,7 +191,10 @@ public class Database {
         }
     }
 
-
+    /**
+     *
+     * @param noOfStudent number of student serviced
+     */
     public void consumption(int noOfStudent) {
         int Tconsumption = (int) (noOfStudent * avgCon), wastage;
         DateFormat df = new SimpleDateFormat("dd-MMM-yy");
@@ -170,6 +217,14 @@ public class Database {
             ex.printStackTrace();
         }
     }
+
+    /**
+     *
+     * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
+     * @param end   end date of type String format dd-MMM-yy ex 18-0ct-18
+     *              report generated inclusive of both date
+     * @return      resultset type object contaning desired tuples
+     */
 
     public ResultSet procuringCost(String start, String end) {
 
@@ -197,6 +252,13 @@ public class Database {
         return rs;
     }*/
 
+    /**
+     *
+     * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
+     *
+     * @param end end date of type String format dd-MMM-yy ex 18-0ct-18
+     * @return resultset type object containing expenditure cost
+     */
     public ResultSet expCost(String start, String end) {
 
 
@@ -221,7 +283,12 @@ public class Database {
          return rs;
      }*/
 
-
+    /**
+     *
+     * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
+     * @param end   end date of type String format dd-MMM-yy ex 18-0ct-18
+     * @return resultset type object containing consumption report only
+     */
     public ResultSet consumptionReport(String start, String end) {
         sql_query = "SELECT C_DATE,TOTALCONSUMPTION FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
         try {
@@ -233,6 +300,12 @@ public class Database {
         return rs;
     }
 
+    /**
+     *
+     * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
+     * @param end   end date of type String format dd-MMM-yy ex 18-0ct-18
+     * @return resultset type object containing wastage report only
+     */
     public ResultSet wastage(String start, String end) {
         sql_query = "SELECT C_DATE,WASTAGE FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
         try {
@@ -244,7 +317,12 @@ public class Database {
         return rs;
     }
 
-
+    /**
+     *
+     * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
+     * @param end   end date of type String format dd-MMM-yy ex 18-0ct-18
+     * @return resultset type object containing overall report
+     */
     public ResultSet ReportAll(String start, String end) {
         sql_query = "CREATE OR REPLACE VIEW REPORTALL AS SELECT * FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
         //System.out.println(sql_query);
@@ -261,6 +339,12 @@ public class Database {
         return rs;
     }
 
+    /**
+     *
+     * @param sum bool to check true if sum needs to be shown false otherwise
+     * @param avg bool to check true if avg needs to be shown false otherwise
+     * @return resultset type object returning sum and avg
+     */
     public ResultSet choices(boolean sum, boolean avg) {
         //String sub_query;
         if (sum == true && avg == false) {
@@ -278,6 +362,10 @@ public class Database {
         }
         return rs;
     }
+
+    /**
+     * method to undo the chages made by addtoinventory method
+     */
 
     public void undoin() {
         DateFormat df = new SimpleDateFormat("dd-MMM-yy");
@@ -306,6 +394,10 @@ public class Database {
         }
     }
 
+    /**
+     * method to undo changes made by removefrominventory method
+     */
+
     public void undoout() {
         DateFormat df = new SimpleDateFormat("dd-MMM-yy");
         Calendar cal = Calendar.getInstance();
@@ -328,6 +420,9 @@ public class Database {
         }
     }
 
+    /**
+     * method to undo changes made by consumption method
+     */
     public void undoconsumptiom() {
         DateFormat df = new SimpleDateFormat("dd-MMM-yy");
         Calendar cal = Calendar.getInstance();
