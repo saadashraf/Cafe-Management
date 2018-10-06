@@ -41,6 +41,28 @@ public class Database {
             ex.printStackTrace();
         }
     }
+    public void close(){
+        try{
+            if(connection != null && !connection.isClosed()){
+                rs.close();
+                connection.close();
+                statement.close();
+            }
+        }
+        catch (SQLException ex){
+            error = true;
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean getConnectionStatus()
+    {
+        return connected;
+    }
+    public boolean geterrorstatus()
+    {
+        return error;
+    }
 
 
     public void AddtoInventory(int _rice, int r_price, int _beef, int b_price, int _chicken, int c_price) {

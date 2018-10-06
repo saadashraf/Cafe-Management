@@ -7,9 +7,10 @@ public class Main {
         int sum=0,cnt=0;
         float avg;
         ResultSet rs;
+        Database db=new Database("test","test");
         try
         {
-            Database db=new Database("test","test");
+
             //db.undoin();
             //db.undoconsumptiom();
             //db.undoout();
@@ -129,7 +130,7 @@ public class Main {
                 }
             }
 
-
+            //undoing records for iem_added,item_removed and consumption
             db.undoin();
             db.undoout();
             //db.consumption(82);
@@ -140,6 +141,9 @@ public class Main {
         catch (Exception e) {
             System.err.println(e);
             e.printStackTrace();
+        }
+        finally {
+            db.close();
         }
     }
 
