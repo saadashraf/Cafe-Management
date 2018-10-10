@@ -31,6 +31,7 @@ public class Main {
             //report generation layout
 
             //report generated for cost only
+            System.out.println("Procuring Cost:");
 
             rs=db.procuringCost("01-JAN-18","30-DEC-18");
             System.out.println("DATE\t\t\tRICE\tPRICE\tCHICKEN\tPRICE\t" +
@@ -58,8 +59,8 @@ public class Main {
 
             //consumtion report only start
 
-            rs=db.consumptionReport("01-JAN-18","30-DEC-18");
-            System.out.println("TOTACONSUMPTION");
+            rs=db.consumptionReport("01-JAN-18","03-DEC-18");
+            System.out.println("TOTAL CONSUMPTION");
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");
@@ -81,8 +82,9 @@ public class Main {
 
             //wastage report end
             System.out.println("\n");
-            System.out.println("ALL REPORT");
-            rs=db.ReportAll("01-JAN-18","30-DEC-18");
+            System.out.println("ALL REPORT:");
+            rs=db.ReportAll("01-JAN-18","03-DEC-18");
+
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");

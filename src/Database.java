@@ -324,19 +324,20 @@ public class Database {
      * @return resultset type object containing overall report
      */
     public ResultSet ReportAll(String start, String end) {
-        sql_query = "CREATE OR REPLACE VIEW REPORTALL AS SELECT * FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
+        sql_query = "CREATE OR REPLACE VIEW REPORTALL AS SELECT * FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + " AND C_DATE<='" + end + "'";
         //System.out.println(sql_query);
         try {
             statement.executeQuery(sql_query);
+            statement.executeQuery("COMMIT");
             sql_query = "SELECT * FROM REPORTALL";
             rs = statement.executeQuery(sql_query);
-            sql_query = "COMMIT";
-            statement.executeQuery(sql_query);
+
         } catch (SQLException ex) {
             System.err.println("FULL REPORT GENERATION ERROR");
             ex.printStackTrace();
         }
         return rs;
+
     }
 
     /**
