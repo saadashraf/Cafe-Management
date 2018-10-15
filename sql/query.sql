@@ -2,6 +2,25 @@ create user test identified by test;
 
 grant connect ,create sessiom,resource,DBA to test;
 
+create table menu(
+    day varchar (15),
+    rice number,
+    beef number,
+    chicken number,
+    constraints pk_menu primary key (day)
+);
+
+insert into menu values ('MONDAY',10,10,10);
+insert into menu values ('TUESDAY',10,10,0);
+insert into menu values ('WEDNESDAY',20,20,10);
+insert into menu values ('THURSDAY',20,0,10);
+insert into menu values ('FRIDAY',20,20,20);
+insert into menu values ('SATURDAY',30,10,10);
+insert into menu values ('SUNDAY',30,30,30);
+
+
+
+
 
 
 

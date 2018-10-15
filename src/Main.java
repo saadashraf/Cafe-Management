@@ -22,15 +22,17 @@ public class Main {
             db.AddtoInventory(200,80,250,200,80,50);
 
             //implementation of remove from inventory
-            db.removeFromInventory(100,100,100);
+            //db.removeFromInventory(100,100,100);
+            db.removeFromInventory();
 
             //implementation of consumption calculated wastage and save into table
 
-            db.consumption(100);
+            db.consumption(10,10,10);
 
             //report generation layout
 
             //report generated for cost only
+            System.out.println("procuring cost");
 
             rs=db.procuringCost("01-JAN-18","30-DEC-18");
             System.out.println("DATE\t\t\tRICE\tPRICE\tCHICKEN\tPRICE\t" +
@@ -45,33 +47,78 @@ public class Main {
                 System.out.print(rs.getInt(6)+"\t\t");
                 System.out.print(rs.getInt(7)+"\t\t");
                 System.out.println(rs.getInt(8)+"\t\t");
-                sum=sum+rs.getInt(8);
-                cnt++;
+                //sum=sum+rs.getInt(8);
+                //cnt++;
 
             }
+            rs=db.p_costSum("01-JAN-18","30-DEC-18");
+            rs.next();
             System.out.println("\n");
-            avg=(float)(sum/cnt);
-            System.out.println("TOTAL COST="+sum+"\n"+"AVERAGE COST="+avg);
+            //avg=(float)(sum/cnt);
+            System.out.println("TOTAL=\t\t\t"+rs.getInt(1)+"\t\t\t\t"+
+                    rs.getInt(3)+"\t\t\t"+rs.getInt(5)+"\t\t\t\t"+rs.getInt(7));
+
+
+            System.out.println("AVERAGE=\t\t"+rs.getInt(2)+"\t\t\t\t"+
+                    rs.getInt(4)+"\t\t\t\t"+rs.getInt(6)+"\t\t\t\t"+rs.getInt(8));
             System.out.println("\n");
+
+            //expenditure cost part of cost only report
+            System.out.println("Expenditure");
+
+            rs=db.expCost("01-JAN-18","30-DEC-18");
+            System.out.println("DATE\t\t\tRICE\tCHICKEN\t" +
+                    "BEEF\tTOTAL");
+
+            while(rs.next())
+            {
+                System.out.print(rs.getDate(1)+"\t\t");
+                System.out.print(rs.getInt(2)+"\t\t");
+                System.out.print(rs.getInt(3)+"\t\t");
+                System.out.print(rs.getInt(4)+"\t\t");
+                System.out.println(rs.getInt(5));
+
+            }
+
+            rs=db.exp_costSum("01-JAN-18","30-DEC-18");
+            rs.next();
+            System.out.println("\n");
+            System.out.println("TOTAL=\t\t\t"+rs.getInt(1)+"\t\t"+
+                    rs.getInt(3)+"\t\t"+rs.getInt(5)+"\t\t"+rs.getInt(7));
+
+
+            System.out.println("AVERAGE=\t\t"+rs.getInt(2)+"\t\t"+
+                    rs.getInt(4)+"\t\t"+rs.getInt(6)+"\t\t"+rs.getInt(8));
+            System.out.println("\n");
+
 
             //cost only report end
 
             //consumtion report only start
 
             rs=db.consumptionReport("01-JAN-18","30-DEC-18");
-            System.out.println("TOTACONSUMPTION");
+            System.out.println("TOTAlCONSUMPTION");
+
+            System.out.println("DATE\t\tCONSUMPTION");
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");
                 System.out.println(rs.getInt(2));
 
             }
+
+            rs=db.consumptionsummary("01-JAN-18","30-DEC-18");
+            rs.next();
+            System.out.println("TOTAL="+rs.getInt(1));
+            System.out.println("AVERAGE="+rs.getInt(2));
             //consumtion report only end
 
             //wastage only report start
             System.out.println("\n");
             rs=db.wastage("01-JAN-18","30-DEC-18");
             System.out.println("WASTAGE");
+
+            System.out.println("DATE\t\tWASTAGE");
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");
@@ -79,10 +126,16 @@ public class Main {
 
             }
 
+            rs=db.wastagesummary("01-JAN-18","30-DEC-18");
+            rs.next();
+            System.out.println("TOTAL="+rs.getInt(1));
+            System.out.println("AVERAGE="+rs.getInt(2));
+
             //wastage report end
             System.out.println("\n");
             System.out.println("ALL REPORT");
             rs=db.ReportAll("01-JAN-18","30-DEC-18");
+            System.out.println("DATE\t\tSTUDENTS\tCONSUMP\tWASTAGE");
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");

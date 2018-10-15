@@ -22,7 +22,7 @@ public class Database {
     private Connection connection; //connection type object to connect to object
     private String db_url; // database destination url
     private int rt;
-    private float avgCon = .2f; // average consumption per person use to calculate wastage
+    private final float avgCon = .2f; // average consumption per person use to calculate wastage
 
 
     /**
@@ -74,7 +74,7 @@ public class Database {
 
     /**
      *
-     * @return boolean coneection status
+     * @return boolean coneection status can be called anytime
      */
     public boolean getConnectionStatus()
     {
@@ -83,7 +83,7 @@ public class Database {
 
     /**
      *
-     * @return boolean error status
+     * @return boolean error status can be called anytime
      */
     public boolean geterrorstatus()
     {
@@ -114,7 +114,6 @@ public class Database {
             //System.out.println(sql_query);
             //rs=statement.executeQuery("SELECT * FROM INVENTORY");
             statement.executeQuery(sql_query);
-
             //System.out.println("hello");
             sql_query = "INSERT INTO ITEM_ADDED VALUES(TO_DATE('" + todayDate + "','mm/dd/yyyy')," + Integer.toString(_rice) + "," +
                     Integer.toString(r_price) + "," + Integer.toString(_beef) + "," + Integer.toString(b_price) + "," +
@@ -147,17 +146,24 @@ public class Database {
         try {
             sql_query = "SELECT * FROM MENU WHERE DAY='" + dow + "'";
             rs = statement.executeQuery(sql_query);
-            total = rs.getInt(1) + rs.getInt(2) + rs.getInt(3);
-            sql_query = "UPDATE INVENTORY SET RICE=RICE-" + Integer.toString(rs.getInt(1)) + "," +
-                    "BEEF=BEEF-" + Integer.toString(rs.getInt(2)) + "," + "CHICKEN=CHICKEN-" + Integer.toString(rs.getInt(3)) + "WHERE ID=1" + ")";
-            //statement.executeQuery(sql_query);
-            sql_query = "INSERT INTO ITEM_REMOVED VALUES(TO_DATE('" + todayDate + "','dd/mm/yyyy'," + Integer.toString(rs.getInt(1)) + "," +
-                    Integer.toString(rs.getInt(2)) + "," + Integer.toString(rs.getInt(3)) + Integer.toString(total) + ")";
-            //statement.executeQuery(sql_query);
-            sql_query = "COMMIT";
+            rs.next();
+            total = rs.getInt(2) + rs.getInt(3) + rs.getInt(4);
+            sql_query = "UPDATE INVENTORY SET RICE=RICE-" + Integer.toString(rs.getInt(2)) + "," +
+                    "BEEF=BEEF-" + Integer.toString(rs.getInt(3)) + "," +
+                    "CHICKEN=CHICKEN-" + Integer.toString(rs.getInt(4)) + " WHERE ID=1";
+            //System.out.println(sql_query);
             statement.executeQuery(sql_query);
+            sql_query = "SELECT * FROM MENU WHERE DAY='" + dow + "'";
+            rs=statement.executeQuery(sql_query);
+            rs.next();
+            sql_query = "INSERT INTO ITEM_REMOVED VALUES(TO_DATE('" + todayDate + "','mm/dd/yyyy')," + Integer.toString(rs.getInt(2)) + "," +
+                    Integer.toString(rs.getInt(3)) + "," + Integer.toString(rs.getInt(4))+"," + Integer.toString(total) + ")";
+            //System.out.println(sql_query);
+            statement.executeQuery(sql_query);
+            //sql_query = "COMMIT";
+           // statement.executeQuery(sql_query);
         } catch (SQLException ex) {
-            System.err.println("ITEM REMOVAL ERROR");
+            System.err.println("ITEM REMOVAL FROM MENU ERROR");
             ex.printStackTrace();
         }
 
@@ -183,8 +189,6 @@ public class Database {
                     Integer.toString(_chicken) + "," + Integer.toString(total) + ")";
             statement.executeQuery(sql_query);
             statement.executeQuery("COMMIT");
-            sql_query = "COMMIT";
-            statement.executeQuery(sql_query);
         } catch (SQLException ex) {
             System.err.println("CUSTOM ITEM REMOVAL ERROR");
             ex.printStackTrace();
@@ -195,8 +199,8 @@ public class Database {
      *
      * @param noOfStudent number of student serviced
      */
-    public void consumption(int noOfStudent) {
-        int Tconsumption = (int) (noOfStudent * avgCon), wastage;
+    public void consumption(int f_taken,int b_taken,int c_taken) {
+        int Tconsumption = (int) ((f_taken * avgCon)+(b_taken*avgCon)+(c_taken*avgCon)), wastage;
         DateFormat df = new SimpleDateFormat("dd-MMM-yy");
         DateFormat df2 = new SimpleDateFormat("MM/dd/yyyy");
         Calendar cal = Calendar.getInstance();
@@ -208,7 +212,7 @@ public class Database {
             rs = statement.executeQuery(sql_query);
             rs.next();
             wastage = rs.getInt(5) - Tconsumption;
-            sql_query = "INSERT INTO CONSUMPTION VALUES(TO_DATE('" + todayDate + "','mm/dd/yyyy')," + Integer.toString(noOfStudent) + "," +
+            sql_query = "INSERT INTO CONSUMPTION VALUES(TO_DATE('" + todayDate + "','mm/dd/yyyy')," + Integer.toString(f_taken+b_taken+c_taken) + "," +
                     Integer.toString(Tconsumption) + "," + Integer.toString(wastage) + ")";
             //System.out.println(sql_query);
             statement.executeQuery(sql_query);
@@ -239,10 +243,11 @@ public class Database {
         return rs;
     }
 
-    /*public ResultSet p_costSum(String start, String end,boolean sum) {
-        sql_query="CREATE OR REPLACE VIEW SUMAVG AS "
+    public ResultSet p_costSum(String start, String end) {
 
-        sql_query = "SELECT SUM(TOTAL),AVG(TOTAL) FROM P_COST WHERE DATE>='" + start + "'" + "AND DATE<='" + end + "'";
+        sql_query = "SELECT SUM(RICE),AVG(RICE),SUM(BEEF),AVG(BEEF),SUM(CHICKEN),AVG(CHICKEN),SUM(TOTAL_COST),AVG(TOTAL_COST) FROM P_COST WHERE P_DATE>='"
+                + start + "'" + " AND P_DATE<='" + end + "'";
+        //System.out.println(sql_query);
         try {
             rs = statement.executeQuery(sql_query);
         } catch (SQLException ex) {
@@ -250,7 +255,7 @@ public class Database {
             ex.printStackTrace();
         }
         return rs;
-    }*/
+    }
 
     /**
      *
@@ -272,8 +277,9 @@ public class Database {
         return rs;
     }
 
-    /* public ResultSet exp_costSum(String start, String end) {
-         sql_query = "SELECT SUM(TOTAL),AVG(TOTAL) FROM EXP_COST WHERE DATE>='" + start + "'" + "AND DATE<='" + end + "'";
+     public ResultSet exp_costSum(String start, String end) {
+         sql_query = "SELECT SUM(RICE),AVG(RICE),SUM(BEEF),AVG(BEEF),SUM(CHICKEN),AVG(CHICKEN),SUM(TOTAL),AVG(TOTAL) FROM EXP_COST WHERE R_DATE>='"
+                 + start + "'" + " AND R_DATE<='" + end + "'";
          try {
              rs = statement.executeQuery(sql_query);
          } catch (SQLException ex) {
@@ -281,7 +287,7 @@ public class Database {
              ex.printStackTrace();
          }
          return rs;
-     }*/
+     }
 
     /**
      *
@@ -300,6 +306,19 @@ public class Database {
         return rs;
     }
 
+    public ResultSet consumptionsummary(String start, String end)
+    {
+        sql_query="SELECT SUM(TOTALCONSUMPTION),AVG(TOTALCONSUMPTION) FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
+        try {
+            rs = statement.executeQuery(sql_query);
+        } catch (SQLException ex) {
+            System.err.println("CONSUMPTION REPORT ERROR");
+            ex.printStackTrace();
+        }
+        return  rs;
+    }
+
+
     /**
      *
      * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
@@ -317,6 +336,18 @@ public class Database {
         return rs;
     }
 
+    public ResultSet wastagesummary(String start, String end)
+    {
+        sql_query="SELECT SUM(WASTAGE),AVG(WASTAGE) FROM CONSUMPTION WHERE C_DATE>='" + start + "'" + "AND C_DATE<='" + end + "'";
+        try {
+            rs = statement.executeQuery(sql_query);
+        } catch (SQLException ex) {
+            System.err.println("CONSUMPTION REPORT ERROR");
+            ex.printStackTrace();
+        }
+        return  rs;
+    }
+
     /**
      *
      * @param start start date of type String format dd-MMM-yy ex 18-0ct-18
@@ -328,10 +359,11 @@ public class Database {
         //System.out.println(sql_query);
         try {
             statement.executeQuery(sql_query);
-            sql_query = "SELECT * FROM REPORTALL";
-            rs = statement.executeQuery(sql_query);
             sql_query = "COMMIT";
             statement.executeQuery(sql_query);
+            sql_query = "SELECT * FROM REPORTALL";
+            rs = statement.executeQuery(sql_query);
+
         } catch (SQLException ex) {
             System.err.println("FULL REPORT GENERATION ERROR");
             ex.printStackTrace();
@@ -438,5 +470,4 @@ public class Database {
         }
 
     }
-
 }
