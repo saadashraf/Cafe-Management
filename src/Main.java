@@ -32,11 +32,7 @@ public class Main {
             //report generation layout
 
             //report generated for cost only
-<<<<<<< HEAD
             System.out.println("procuring cost");
-=======
-            System.out.println("Procuring Cost:");
->>>>>>> 03164105f9fb15da973924f0dcc26b667c868a13
 
             rs=db.procuringCost("01-JAN-18","30-DEC-18");
             System.out.println("DATE\t\t\tRICE\tPRICE\tCHICKEN\tPRICE\t" +
@@ -100,15 +96,10 @@ public class Main {
 
             //consumtion report only start
 
-<<<<<<< HEAD
             rs=db.consumptionReport("01-JAN-18","30-DEC-18");
             System.out.println("TOTAlCONSUMPTION");
 
             System.out.println("DATE\t\tCONSUMPTION");
-=======
-            rs=db.consumptionReport("01-JAN-18","03-DEC-18");
-            System.out.println("TOTAL CONSUMPTION");
->>>>>>> 03164105f9fb15da973924f0dcc26b667c868a13
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");
@@ -142,15 +133,9 @@ public class Main {
 
             //wastage report end
             System.out.println("\n");
-<<<<<<< HEAD
             System.out.println("ALL REPORT");
             rs=db.ReportAll("01-JAN-18","30-DEC-18");
             System.out.println("DATE\t\tSTUDENTS\tCONSUMP\tWASTAGE");
-=======
-            System.out.println("ALL REPORT:");
-            rs=db.ReportAll("01-JAN-18","03-DEC-18");
-
->>>>>>> 03164105f9fb15da973924f0dcc26b667c868a13
             while(rs.next())
             {
                 System.out.print(rs.getDate(1)+"\t\t");
