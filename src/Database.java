@@ -196,8 +196,10 @@ public class Database {
     }
 
     /**
-     *
-     * @param noOfStudent number of student serviced
+     * 
+     * @param f_taken
+     * @param b_taken
+     * @param c_taken
      */
     public void consumption(int f_taken,int b_taken,int c_taken) {
         int Tconsumption = (int) ((f_taken * avgCon)+(b_taken*avgCon)+(c_taken*avgCon)), wastage;
